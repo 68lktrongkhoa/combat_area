@@ -1,0 +1,5 @@
+{
+  "name": "Code Combat Arena",
+  "description": "Một giao diện thiết kế game cho 'Code Combat Arena', một trò chơi nơi người chơi chế tạo và lập trình robot. Game có một nhà chứa để tùy biến robot và một môi trường lập trình tích hợp (IDE) với trợ lý AI (sử dụng Gemini) để giúp tạo mã kịch bản điều khiển robot từ ngôn ngữ tự nhiên.",
+  "requestFramePermissions": []
+}
