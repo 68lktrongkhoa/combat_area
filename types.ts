@@ -64,6 +64,10 @@ export interface RobotState {
   maxHealth: number;
   isShieldActive: boolean;
   isVisible: boolean;
+  moduleCooldowns: {
+    defense: number; // Game tick when the cooldown ends
+    utility: number; // Game tick when the cooldown ends
+  };
 }
 
 export interface ProjectileState {

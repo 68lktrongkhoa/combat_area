@@ -19,7 +19,8 @@ export const Ide: React.FC<IdeProps> = ({ robotCode, setRobotCode, onStartCombat
   const [aiPrompt, setAiPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [consoleLog, setConsoleLog] = useState<string[]>([t('ide_console_initialized')]);
-  
+  const [editorContent, setEditorContent] = useState(robotCode);
+
   const handleGenerateCode = async () => {
     if (!aiPrompt.trim()) return;
     setIsLoading(true);
@@ -31,7 +32,7 @@ export const Ide: React.FC<IdeProps> = ({ robotCode, setRobotCode, onStartCombat
 
     try {
       const generatedCode = await generateCodeFromPrompt(aiPrompt, language, handleRetry);
-      setRobotCode(prevCode => `${prevCode}\n\n// ${t('ide_ai_code_comment', { prompt: aiPrompt })}\n${generatedCode}`);
+      setEditorContent(prevContent => `${prevContent}\n\n// ${t('ide_ai_code_comment', { prompt: aiPrompt })}\n${generatedCode}`);
       setConsoleLog(prev => [...prev, `> ${t('ide_ai_success')}`]);
       setAiPrompt('');
     } catch (error) {
@@ -41,6 +42,11 @@ export const Ide: React.FC<IdeProps> = ({ robotCode, setRobotCode, onStartCombat
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleUpdateCode = () => {
+    setRobotCode(editorContent);
+    setConsoleLog(prev => [...prev, `> ${t('ide_code_updated')}`]);
   };
 
   const apiDocs = useMemo(() => language === 'vi' ? ROBOT_API_DOCS_VI : ROBOT_API_DOCS_EN, [language]);
@@ -61,11 +67,19 @@ export const Ide: React.FC<IdeProps> = ({ robotCode, setRobotCode, onStartCombat
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
         {/* Left Column: Code Editor */}
         <div className="lg:col-span-2 flex flex-col min-h-0">
-          <label htmlFor="code-editor" className="text-lg font-semibold mb-2 text-cyan-400">{t('ide_editor_label')}</label>
+          <div className="flex justify-between items-center mb-2">
+            <label htmlFor="code-editor" className="text-lg font-semibold text-cyan-400">{t('ide_editor_label')}</label>
+            <button 
+                onClick={handleUpdateCode}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+                Update Code
+            </button>
+          </div>
           <textarea
             id="code-editor"
-            value={robotCode}
-            onChange={(e) => setRobotCode(e.target.value)}
+            value={editorContent}
+            onChange={(e) => setEditorContent(e.target.value)}
             className="flex-1 w-full p-4 bg-gray-800 border border-gray-600 rounded-lg font-mono text-sm text-green-300 resize-none focus:ring-2 focus:ring-cyan-500 focus:outline-none"
             placeholder={t('ide_editor_placeholder')}
           />

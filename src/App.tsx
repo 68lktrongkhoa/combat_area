@@ -34,11 +34,20 @@ function App() {
  * ${t('initial_code_comment_2')}
  */
 function update() {
+    // Example: Find and attack the nearest enemy.
     const enemies = self.scan_enemies();
     if (enemies.length > 0) {
+        // Sort enemies by distance to find the closest one.
+        enemies.sort((a, b) => a.distance - b.distance);
         const closestEnemy = enemies[0];
+
+        // Aim and fire at the closest enemy.
         self.rotate_towards(closestEnemy.position);
         self.fire_at(closestEnemy.position);
+        self.log(\`Attacking enemy at (\${closestEnemy.position.x.toFixed(1)}, \${closestEnemy.position.y.toFixed(1)})\`);
+    } else {
+        // No enemies in sight, maybe patrol.
+        self.move_to(Math.random() * 100, Math.random() * 100);
     }
 }
 `, [t]);
@@ -199,9 +208,12 @@ function update() {
       case GamePhase.Combat:
         const enemyBuild = gameMode === 'pvp' ? player2State.build :
                            gameMode === 'campaign' ? currentLevel!.opponentBuild : aiBuild;
+        const enemyCode = gameMode === 'pvp' ? player2State.code : ''; // AI uses simple built-in logic
         return <Arena 
                   build1={player1State.build} 
-                  build2={enemyBuild} 
+                  code1={player1State.code}
+                  build2={enemyBuild}
+                  code2={enemyCode}
                   onCombatEnd={handleCombatEnd}
                   gameMode={gameMode}
                 />;
